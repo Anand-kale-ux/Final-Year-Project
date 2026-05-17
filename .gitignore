@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#.env.local
+GROQ_API_KEY=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
