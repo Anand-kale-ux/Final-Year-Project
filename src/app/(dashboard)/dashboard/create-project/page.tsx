@@ -13,6 +13,7 @@ import { useProject } from "@/hooks/useProject";
 import { generateArchitecture } from "@/lib/aiEngine";
 
 export default function CreateProjectPage() {
+
     const {
         isFormValid,
         setGenerationStatus,
@@ -21,31 +22,83 @@ export default function CreateProjectPage() {
         selectedFeatures,
         setGeneratedResult
     } = useProject();
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [showError, setShowError] = useState(false);
+
+    const [isProcessing, setIsProcessing] =
+        useState(false);
+
+    const [showError, setShowError] =
+        useState(false);
+
     const router = useRouter();
 
     const handleSubmit = async () => {
+
         if (!isFormValid) {
+
             setShowError(true);
+
             return;
         }
 
         setShowError(false);
+
         setIsProcessing(true);
+
         setGenerationStatus("processing");
 
         try {
-            const result = await generateArchitecture({
-                idea: projectIdea,
-                difficulty: difficultyLevel,
-                features: selectedFeatures
-            });
+
+            const result =
+                await generateArchitecture({
+                    idea: projectIdea,
+
+                    difficulty:
+                        difficultyLevel,
+
+                    features:
+                        selectedFeatures
+                });
+
             setGeneratedResult(result);
+
+            // Get Logged In User
+            const user = JSON.parse(
+                localStorage.getItem("user")
+            );
+
+            // Save Project To MongoDB
+            await fetch("/api/project", {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json",
+                },
+
+                body: JSON.stringify({
+                    userId: user?._id,
+
+                    userName:
+                        user?.name,
+
+                    prompt:
+                        projectIdea,
+
+                    projectTitle:
+                        projectIdea,
+
+                    techStack: [
+                        "Next.js",
+                        "MongoDB",
+                        "Node.js",
+                    ],
+                }),
+            });    
+                 
             setGenerationStatus("completed");
             setIsProcessing(false);
             router.push("/dashboard/result");
-        } catch (error) {
+        }   catch (error) {
             console.error("Error generating architecture:", error);
             const errorMessage = error instanceof Error ? error.message : "AI generation failed. Please try again.";
             import("react-hot-toast").then(mod => mod.default.error(errorMessage));
