@@ -1,143 +1,210 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Cpu, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
-import { useAuthStore } from "@/lib/store";
 
 export default function SignupPage() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState("");
 
     const router = useRouter();
-    const setUser = useAuthStore((state) => state.setUser);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const [name, setName] = useState("");
+
+    const [email, setEmail] = useState("");
+
+    const [password, setPassword] =
+        useState("");
+
+    const [confirmPassword,
+        setConfirmPassword] = useState("");
+
+    const [error, setError] = useState("");
+
+    const [isLoading, setIsLoading] =
+        useState(false);
+
+    const handleSubmit = async (
+        e: React.FormEvent
+    ) => {
+
         e.preventDefault();
+
         setIsLoading(true);
+
         setError("");
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match.");
+
+            setError(
+                "Passwords do not match"
+            );
+
             setIsLoading(false);
+
             return;
         }
 
-        // Simulate API call
-        setTimeout(() => {
-            setUser({ id: "2", name, email });
-            router.push("/dashboard");
-            setIsLoading(false);
-        }, 1500);
+        try {
+
+            const res = await fetch(
+                "/api/signup",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                    },
+
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                    }),
+                }
+            );
+
+            const data = await res.json();
+
+            if (data.success) {
+
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify(data.user)
+                );
+
+                router.push("/dashboard");
+
+            } else {
+
+                setError(data.error);
+            }
+
+        } catch (error) {
+
+            setError("Something went wrong");
+        }
+
+        setIsLoading(false);
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-6 bg-black relative overflow-hidden">
-            <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,#06B6D41A,transparent_50%)] -z-10" />
+        <div className="min-h-screen relative overflow-hidden bg-[#020617] flex items-center justify-center px-4">
 
-            <Card className="w-full max-w-md p-8 bg-white/5 border-white/10 shadow-2xl relative">
-                <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center gap-2 mb-4 group justify-center">
-                        <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-                            <Cpu className="w-6 h-6 text-primary" />
-                        </div>
-                        <span className="text-xl font-bold tracking-tight text-white">AI Project Architect</span>
-                    </Link>
-                    <h2 className="text-2xl font-bold text-white">Create Account</h2>
-                    <p className="text-text-secondary text-sm">Join the future of software architecture</p>
-                </div>
+            {/* Background Glow */}
+            <div className="absolute top-0 left-0 w-72 h-72 bg-cyan-500/20 blur-3xl rounded-full" />
 
-                {error && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-sm mb-6"
+            <div className="absolute bottom-0 right-0 w-72 h-72 bg-blue-600/20 blur-3xl rounded-full" />
+
+            {/* Card */}
+            <div className="relative w-full max-w-md">
+
+                <div className="backdrop-blur-2xl bg-white/5 border border-white/10 shadow-[0_0_50px_rgba(0,255,255,0.15)] rounded-3xl p-8">
+
+                    {/* Heading */}
+                    <div className="text-center mb-8">
+
+                        <h1 className="text-4xl font-extrabold text-white mb-2">
+                            Create Account
+                        </h1>
+
+                        <p className="text-gray-400">
+                            Join AI Project Architect
+                        </p>
+
+                    </div>
+
+                    {/* Form */}
+                    <form
+                        onSubmit={handleSubmit}
+                        className="space-y-5"
                     >
-                        {error}
-                    </motion.div>
-                )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="relative group">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted group-focus-within:text-primary transition-colors" />
+                        {/* Full Name */}
                         <input
                             type="text"
                             placeholder="Full Name"
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white placeholder:text-text-muted outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all font-medium"
-                            required
+                            onChange={(e) =>
+                                setName(e.target.value)
+                            }
+                            className="w-full bg-[#0F172A]/80 border border-gray-700 text-white px-5 py-4 rounded-2xl outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/30 transition-all"
                         />
-                    </div>
 
-                    <div className="relative group">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted group-focus-within:text-primary transition-colors" />
+                        {/* Email */}
                         <input
                             type="email"
                             placeholder="Email Address"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white placeholder:text-text-muted outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all font-medium"
-                            required
+                            onChange={(e) =>
+                                setEmail(e.target.value)
+                            }
+                            className="w-full bg-[#0F172A]/80 border border-gray-700 text-white px-5 py-4 rounded-2xl outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/30 transition-all"
                         />
-                    </div>
 
-                    <div className="relative group">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted group-focus-within:text-primary transition-colors" />
+                        {/* Password */}
                         <input
-                            type={showPassword ? "text" : "password"}
+                            type="password"
                             placeholder="Password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white placeholder:text-text-muted outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all font-medium"
-                            required
+                            onChange={(e) =>
+                                setPassword(e.target.value)
+                            }
+                            className="w-full bg-[#0F172A]/80 border border-gray-700 text-white px-5 py-4 rounded-2xl outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/30 transition-all"
                         />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white transition-colors"
-                        >
-                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                        </button>
-                    </div>
 
-                    <div className="relative group">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted group-focus-within:text-primary transition-colors" />
+                        {/* Confirm Password */}
                         <input
-                            type={showPassword ? "text" : "password"}
+                            type="password"
                             placeholder="Confirm Password"
                             value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white placeholder:text-text-muted outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all font-medium"
-                            required
+                            onChange={(e) =>
+                                setConfirmPassword(
+                                    e.target.value
+                                )
+                            }
+                            className="w-full bg-[#0F172A]/80 border border-gray-700 text-white px-5 py-4 rounded-2xl outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/30 transition-all"
                         />
-                    </div>
 
-                    <Button
-                        type="submit"
-                        isLoading={isLoading}
-                        className="w-full py-6 mt-4"
-                    >
-                        Create Account
-                    </Button>
-                </form>
+                        {/* Error */}
+                        {error && (
+                            <p className="text-red-400 text-sm">
+                                {error}
+                            </p>
+                        )}
 
-                <p className="mt-8 text-center text-sm text-text-secondary">
-                    Already have an account?{" "}
-                    <Link href="/login" className="text-primary font-bold hover:underline">
-                        Log In
-                    </Link>
-                </p>
-            </Card>
+                        {/* Signup Button */}
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(0,255,255,0.4)] transition-all duration-300"
+                        >
+                            {isLoading
+                                ? "Creating Account..."
+                                : "Sign Up"}
+                        </button>
+
+                        {/* Login Redirect */}
+                        <p className="text-center text-gray-400 text-sm">
+
+                            Already have an account?{" "}
+
+                            <span
+                                onClick={() =>
+                                    router.push("/login")
+                                }
+                                className="text-cyan-400 hover:text-cyan-300 cursor-pointer font-semibold transition-all"
+                            >
+                                Login
+                            </span>
+
+                        </p>
+
+                    </form>
+
+                </div>
+
+            </div>
+
         </div>
     );
 }

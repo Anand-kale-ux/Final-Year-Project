@@ -4,55 +4,82 @@ import { useState } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
 
 export default function Chatbot() {
+
   const [open, setOpen] = useState(false);
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] =
+    useState("");
 
-  const [messages, setMessages] = useState([
-    {
-      sender: "ai",
-      text: "Hi 👋 I am your AI Assistant. How can I help you today?",
-    },
-  ]);
+  const [messages, setMessages] =
+    useState([
+      {
+        sender: "ai",
+
+        text:
+          "Hi 👋 I am your AI Assistant. How can I help you today?",
+      },
+    ]);
 
   const sendMessage = async () => {
+
     if (!message.trim()) return;
 
-    // User message
+    // User Message
     const userMessage = {
       sender: "user",
       text: message,
     };
 
     // Show user message instantly
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [
+      ...prev,
+      userMessage,
+    ]);
 
     try {
+
+      // Get logged in user
+      const user = JSON.parse(
+        localStorage.getItem("user")
+      );
+
       // API Request
-      const res = await fetch("/api/chat", {
-        method: "POST",
+      const res = await fetch(
+        "/api/chat",
+        {
+          method: "POST",
 
-        headers: {
-          "Content-Type": "application/json",
-        },
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
 
-        body: JSON.stringify({
-          userMessage: message,
-        }),
-      });
+          body: JSON.stringify({
+            userMessage: message,
+            userId: user?._id,
+          }),
+        }
+      );
 
       const data = await res.json();
 
       // AI Reply
       const aiReply = {
         sender: "ai",
-        text: data.reply || "No response from AI",
+
+        text:
+          data.reply ||
+          "No response from AI",
       };
 
       // Show AI reply
-      setMessages((prev) => [...prev, aiReply]);
+      setMessages((prev) => [
+        ...prev,
+        aiReply,
+      ]);
 
     } catch (error) {
+
       console.error(error);
 
       const errorReply = {
@@ -60,10 +87,13 @@ export default function Chatbot() {
         text: "⚠️ Server Error",
       };
 
-      setMessages((prev) => [...prev, errorReply]);
+      setMessages((prev) => [
+        ...prev,
+        errorReply,
+      ]);
     }
 
-    // Clear input
+    // Clear Input
     setMessage("");
   };
 
@@ -73,14 +103,18 @@ export default function Chatbot() {
       <div className="fixed bottom-6 right-6 z-50">
 
         <button
-          onClick={() => setOpen(!open)}
+          onClick={() =>
+            setOpen(!open)
+          }
           className="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 shadow-2xl flex items-center justify-center hover:scale-110 transition-all duration-300"
         >
+
           {open ? (
             <X className="text-white w-7 h-7" />
           ) : (
             <MessageCircle className="text-white w-7 h-7" />
           )}
+
         </button>
 
       </div>
@@ -102,6 +136,7 @@ export default function Chatbot() {
           </div>
 
           <div>
+
             <h2 className="text-white font-bold text-lg">
               AI Assistant
             </h2>
@@ -109,25 +144,29 @@ export default function Chatbot() {
             <p className="text-white/70 text-sm">
               Online
             </p>
+
           </div>
 
         </div>
 
-        {/* Chat Messages */}
+        {/* Messages */}
         <div className="h-[390px] overflow-y-auto p-4 space-y-4">
 
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm ${
-                msg.sender === "user"
-                  ? "ml-auto bg-cyan-500 text-white"
-                  : "bg-[#1E293B] text-gray-300"
-              }`}
-            >
-              {msg.text}
-            </div>
-          ))}
+          {messages.map(
+            (msg, index) => (
+              <div
+                key={index}
+                className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm ${
+                  msg.sender ===
+                  "user"
+                    ? "ml-auto bg-cyan-500 text-white"
+                    : "bg-[#1E293B] text-gray-300"
+                }`}
+              >
+                {msg.text}
+              </div>
+            )
+          )}
 
         </div>
 
@@ -140,7 +179,11 @@ export default function Chatbot() {
               type="text"
               placeholder="Type your message..."
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={(e) =>
+                setMessage(
+                  e.target.value
+                )
+              }
               className="flex-1 bg-[#1E293B] border border-gray-600 text-white px-4 py-3 rounded-xl outline-none focus:border-cyan-400 transition-all"
             />
 
@@ -148,7 +191,9 @@ export default function Chatbot() {
               onClick={sendMessage}
               className="w-12 h-12 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center hover:scale-105 transition-all"
             >
+
               <Send className="text-white w-5 h-5" />
+
             </button>
 
           </div>
