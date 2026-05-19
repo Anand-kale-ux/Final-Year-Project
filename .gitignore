@@ -39,12 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+<<<<<<< HEAD
 
-#.env.local
-GROQ_API_KEY=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
 
-#.env.local om
-
-GROQ_API_KEY=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
-
-MONGODB_URI=mongodb+srv://dco2023onkute_db_user:om1234@cluster0.ppbwuyq.mongodb.net/?appName=Cluster0
+=======
+>>>>>>> 5d69592cf98cfe4af3837e4f3a868c5fa80168f0
