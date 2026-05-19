@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import Chat from "@/models/Chat";
-import { connectDB } from "@/lib/mongodb";
-import Project from "@/models/ProjectPrompt";
+import { connectDB }
+from "@/lib/mongodb"
+import Project
+from "@/models/ProjectPrompt";
 
 export async function POST(req: Request) {
 
